@@ -40,11 +40,12 @@ pub async fn create_transaction(
             let req = req.clone();
             let current_user = user_extractor.user.clone();
             async move {
-                // Get account of sender
-                let select_account = account::Select {
+                // Update balance of sender
+                let update_account = account::Credit {
                     account_number: req.from_account,
+                    amount: &-req.amount.clone(),
                 };
-                let from_account = db_conn.run_query(select_account).await?;
+                let from_account = db_conn.run_query(update_account).await?;
 
                 // Check if the account belongs to the current user
                 if from_account.user_id != current_user.id {
@@ -54,19 +55,12 @@ pub async fn create_transaction(
                     })?
                 }
 
-                // Check if sender has enough balance
-                // for the transaction
-                if from_account.balance < req.amount {
+                // Throw error if the balance wasn't updated
+                if from_account.balance < 0.into() {
                     Err(db::Error::InsufficientBalance {
                         account_number: from_account.account_number,
                     })?
                 }
-
-                // Get account of receiver
-                let select_account = account::Select {
-                    account_number: req.to_account,
-                };
-                let to_account = db_conn.run_query(select_account).await?;
 
                 // Insert debit transaction
                 let debit_query = transaction::Insert {
@@ -78,13 +72,12 @@ pub async fn create_transaction(
                 };
                 let debit = db_conn.run_query(debit_query).await?;
 
-                // Update balance of sender
-                let new_balance = from_account.balance - &req.amount;
-                let update_account = account::Update {
-                    id: from_account.id,
-                    balance: &new_balance,
+                // Update balance of receiver
+                let update_account = account::Credit {
+                    account_number: req.to_account,
+                    amount: &req.amount,
                 };
-                db_conn.run_query(update_account).await?;
+                let to_account = db_conn.run_query(update_account).await?;
 
                 // Insert credit transaction
                 let credit_query = transaction::Insert {
@@ -95,14 +88,6 @@ pub async fn create_transaction(
                     description: &req.description,
                 };
                 let credit = db_conn.run_query(credit_query).await?;
-
-                // Update balance of receiver
-                let new_balance = to_account.balance + &req.amount;
-                let update_account = account::Update {
-                    id: from_account.id,
-                    balance: &new_balance,
-                };
-                db_conn.run_query(update_account).await?;
 
                 Ok(Response { credit, debit })
             }
