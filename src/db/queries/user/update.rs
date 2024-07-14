@@ -24,7 +24,7 @@ impl<'a> Query<PgPool> for Update<'a> {
             self.password.map(|val| ("password", val)),
         ]
         .into_iter()
-        .filter_map(|x| x)
+        .flatten()
         .enumerate()
         .map(|(index, (name, val))| {
             if index > 0 {

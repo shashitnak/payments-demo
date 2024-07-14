@@ -31,8 +31,7 @@ RUN source .env && \
     apk del rustup && \
     rm -rf "$HOME/.cargo" && \
     rm -rf "$HOME/.rustup" && \
-    rm -rf /build && \
-    rm -rf /usr/libexec
+    rm -rf /build
 
 WORKDIR /app
 

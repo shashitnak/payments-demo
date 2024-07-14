@@ -1,6 +1,6 @@
 use crate::db::{account, Account};
-use crate::AppData;
 use crate::routes::UserExtractor;
+use crate::AppData;
 use actix_web::{post, web};
 use serde::Deserialize;
 
@@ -23,7 +23,10 @@ pub async fn get_account_detail(
     let account = app_data.db_conn.run_query(query).await?;
 
     if account.user_id != current_user.id {
-        Err(crate::db::Error::UnauthorizedAccountAccess { account_number: req.account_number, user_id: current_user.id })?
+        Err(crate::db::Error::UnauthorizedAccountAccess {
+            account_number: req.account_number,
+            user_id: current_user.id,
+        })?
     }
 
     Ok(web::Json(account))

@@ -46,7 +46,7 @@ pub fn serialize_time<S: Serializer>(
     value: &chrono::NaiveDateTime,
     serializer: S,
 ) -> Result<S::Ok, S::Error> {
-    let string_repr = DateTime::<Utc>::from_naive_utc_and_offset(value.clone(), Utc).to_rfc3339();
+    let string_repr = DateTime::<Utc>::from_naive_utc_and_offset(*value, Utc).to_rfc3339();
     string_repr.serialize(serializer)
 }
 

@@ -8,7 +8,10 @@ use sqlx::types::BigDecimal;
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Request {
-    #[serde(default = "BigDecimal::default", deserialize_with = "crate::utils::deserialize_from_str")]
+    #[serde(
+        default = "BigDecimal::default",
+        deserialize_with = "crate::utils::deserialize_from_str"
+    )]
     opening_balance: BigDecimal,
 }
 

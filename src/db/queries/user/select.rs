@@ -11,7 +11,7 @@ impl Query<PgPool> for Select {
     type Output = User;
 
     async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
-        Ok(sqlx::query_as!(
+        sqlx::query_as!(
             User,
             r#"SELECT *
                 FROM users
@@ -25,6 +25,6 @@ impl Query<PgPool> for Select {
             id: Some(self.id),
             username: None,
             email: None,
-        })?)
+        })
     }
 }

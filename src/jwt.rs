@@ -13,13 +13,13 @@ pub struct Claims {
 }
 
 #[derive(Clone)]
-pub struct JWT {
+pub struct Jwt {
     secret: String,
 }
 
-impl JWT {
+impl Jwt {
     pub fn new(secret: &str) -> Self {
-        JWT {
+        Jwt {
             secret: secret.into(),
         }
     }
@@ -37,7 +37,7 @@ impl JWT {
         encode(
             &header,
             &claims,
-            &EncodingKey::from_secret(&self.secret.as_bytes()),
+            &EncodingKey::from_secret(self.secret.as_bytes()),
         )
         .map_err(|_| JWTCreationFailed)
     }
@@ -45,7 +45,7 @@ impl JWT {
     pub fn validate_token(&self, token: &str) -> Result<Claims> {
         decode(
             token,
-            &DecodingKey::from_secret(&self.secret.as_bytes()),
+            &DecodingKey::from_secret(self.secret.as_bytes()),
             &Validation::new(Algorithm::HS512),
         )
         .map_err(|_| JWTValidationFailed)

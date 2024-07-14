@@ -32,7 +32,7 @@ pub enum Error {
     },
     #[from]
     #[serde(serialize_with = "crate::utils::serialize_debug")]
-    SqlxError(sqlx::Error),
+    Sqlx(sqlx::Error),
     #[from]
     #[serde(serialize_with = "crate::utils::serialize_debug")]
     Migration(sqlx::migrate::MigrateError),

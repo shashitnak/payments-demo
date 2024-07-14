@@ -5,7 +5,7 @@ mod routes;
 pub mod utils;
 
 use crate::db::{DBConn, User};
-use crate::jwt::JWT;
+use crate::jwt::Jwt;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 use lazy_static::lazy_static;
@@ -33,14 +33,14 @@ lazy_static! {
 #[derive(Clone)]
 pub struct AppData {
     pub db_conn: DBConn,
-    pub jwt: JWT,
+    pub jwt: Jwt,
     pub user: Arc<RwLock<Option<User>>>,
 }
 
 #[actix_web::main]
 async fn main() -> error::Result<()> {
     let db_conn = DBConn::new(&ENV.db_url).await?;
-    let jwt = JWT::new(&ENV.jwt_secret);
+    let jwt = Jwt::new(&ENV.jwt_secret);
     let app_data = AppData {
         db_conn,
         jwt,
