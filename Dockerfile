@@ -1,4 +1,4 @@
-FROM rust:alpine
+FROM alpine
 
 COPY migrations /build/migrations
 COPY src /build/src
@@ -12,7 +12,7 @@ WORKDIR /build
 RUN source .env && \
     apk update && \
     apk upgrade --no-cache && \
-    apk add --no-cache build-base libc-dev postgresql pkgconf openssl-dev postgresql-contrib && \
+    apk add --no-cache rustup build-base libc-dev postgresql pkgconf openssl-dev postgresql-contrib && \
     su - postgres -c "initdb -D /var/lib/postgresql/data" && \
     mkdir -p /run/postgresql && \
     chown postgres:postgres /run/postgresql && \
@@ -20,6 +20,7 @@ RUN source .env && \
     su - postgres -c "pg_ctl -D /var/lib/postgresql/data start" && \
     su - postgres -c "psql -c \"CREATE USER $DATABASE_USER WITH PASSWORD '$DATEBASE_PASS';\"" && \
     su - postgres -c "psql -c \"CREATE DATABASE $DATABASE_NAME OWNER $DATABASE_USER;\"" && \
+    rustup-init -y && source "$HOME/.cargo/env" && \
     cargo install sqlx-cli --no-default-features --features postgres && \
     sqlx migrate run && \
     cargo build --release && \
@@ -27,7 +28,11 @@ RUN source .env && \
     cp /build/target/release/dodopayments /app/dodopayments && \
     cp /build/.env /app/.env && \
     cd /app && \
-    rm -rf /build
+    apk del rustup && \
+    rm -rf "$HOME/.cargo" && \
+    rm -rf "$HOME/.rustup" && \
+    rm -rf /build && \
+    rm -rf /usr/libexec
 
 WORKDIR /app
 
