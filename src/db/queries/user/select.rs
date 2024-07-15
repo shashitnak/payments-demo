@@ -1,16 +1,18 @@
 use crate::db::Error::UserNotFound;
 use crate::db::{Query, User};
 use sqlx::types::Uuid;
-use sqlx::PgPool;
 
 pub struct Select {
     pub id: Uuid,
 }
 
-impl Query<PgPool> for Select {
+impl Query for Select {
     type Output = User;
 
-    async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> crate::db::Result<Self::Output> {
         sqlx::query_as!(
             User,
             r#"SELECT *

@@ -1,7 +1,6 @@
 use crate::db::Error::UserAlreadyExists;
 use crate::db::{self, Query};
 use sqlx::types::Uuid;
-use sqlx::PgPool;
 
 pub struct Insert<'a> {
     pub name: &'a str,
@@ -10,10 +9,13 @@ pub struct Insert<'a> {
     pub password: &'a str,
 }
 
-impl<'a> Query<PgPool> for Insert<'a> {
+impl<'a> Query for Insert<'a> {
     type Output = Uuid;
 
-    async fn execute(&self, conn: &PgPool) -> db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> db::Result<Self::Output> {
         let record = sqlx::query!(
             r#"INSERT INTO users (name, email, username, password)
                 VALUES ($1, $2, $3, $4)

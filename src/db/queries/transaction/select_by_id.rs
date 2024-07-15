@@ -1,15 +1,17 @@
 use crate::db::{Query, Transaction, TransactionType};
-use sqlx::PgPool;
 use uuid::Uuid;
 
 pub struct SelectById {
     pub id: Uuid,
 }
 
-impl Query<PgPool> for SelectById {
+impl Query for SelectById {
     type Output = Transaction;
 
-    async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> crate::db::Result<Self::Output> {
         Ok(sqlx::query_as!(
             Transaction,
             r#"SELECT

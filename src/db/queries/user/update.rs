@@ -1,6 +1,6 @@
 use crate::db::{Query, User};
 use sqlx::types::Uuid;
-use sqlx::{FromRow, PgPool};
+use sqlx::FromRow;
 use std::fmt::Write;
 
 pub struct Update<'a> {
@@ -11,10 +11,13 @@ pub struct Update<'a> {
     pub password: Option<&'a str>,
 }
 
-impl<'a> Query<PgPool> for Update<'a> {
+impl<'a> Query for Update<'a> {
     type Output = User;
 
-    async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> crate::db::Result<Self::Output> {
         let mut query = "UPDATE users SET ".to_string();
 
         let args = [

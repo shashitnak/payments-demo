@@ -14,6 +14,9 @@ pub enum Error {
     InsufficientBalance,
     #[from]
     DB(crate::db::Error),
+    #[from]
+    #[serde(serialize_with = "crate::utils::serialize_debug")]
+    Sqlx(sqlx::Error),
 }
 
 impl Display for Error {

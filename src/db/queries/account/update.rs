@@ -1,16 +1,18 @@
 use crate::db::{Account, Query};
 use sqlx::types::BigDecimal;
-use sqlx::PgPool;
 
 pub struct Credit<'a> {
     pub account_number: i64,
     pub amount: &'a BigDecimal,
 }
 
-impl<'a> Query<PgPool> for Credit<'a> {
+impl<'a> Query for Credit<'a> {
     type Output = Account;
 
-    async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> crate::db::Result<Self::Output> {
         Ok(sqlx::query_as!(
             Account,
             r#"UPDATE accounts

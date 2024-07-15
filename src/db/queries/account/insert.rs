@@ -1,7 +1,6 @@
 use crate::db;
 use crate::db::{Account, Query};
 use sqlx::types::BigDecimal;
-use sqlx::PgPool;
 use uuid::Uuid;
 
 pub struct Insert<'a> {
@@ -9,10 +8,13 @@ pub struct Insert<'a> {
     pub balance: &'a BigDecimal,
 }
 
-impl<'a> Query<PgPool> for Insert<'a> {
+impl<'a> Query for Insert<'a> {
     type Output = Account;
 
-    async fn execute(&self, conn: &PgPool) -> db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> db::Result<Self::Output> {
         let account = sqlx::query_as!(
             Account,
             r#"INSERT INTO accounts (

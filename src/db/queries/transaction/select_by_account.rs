@@ -1,15 +1,18 @@
 use crate::db::{Query, Transaction, TransactionType};
-use sqlx::{types::chrono, PgPool};
+use sqlx::types::chrono;
 use uuid::Uuid;
 
 pub struct SelectByAccount {
     pub account_id: Uuid,
 }
 
-impl Query<PgPool> for SelectByAccount {
+impl Query for SelectByAccount {
     type Output = Vec<Transaction>;
 
-    async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> crate::db::Result<Self::Output> {
         Ok(sqlx::query_as!(
             Transaction,
             r#"SELECT
@@ -36,10 +39,13 @@ pub struct SelectByAccountWithStartTime {
     pub start: chrono::NaiveDateTime,
 }
 
-impl Query<PgPool> for SelectByAccountWithStartTime {
+impl Query for SelectByAccountWithStartTime {
     type Output = Vec<Transaction>;
 
-    async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> crate::db::Result<Self::Output> {
         Ok(sqlx::query_as!(
             Transaction,
             r#"SELECT
@@ -67,10 +73,13 @@ pub struct SelectByAccountWithEndTime {
     pub end: chrono::NaiveDateTime,
 }
 
-impl Query<PgPool> for SelectByAccountWithEndTime {
+impl Query for SelectByAccountWithEndTime {
     type Output = Vec<Transaction>;
 
-    async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> crate::db::Result<Self::Output> {
         Ok(sqlx::query_as!(
             Transaction,
             r#"SELECT
@@ -99,10 +108,13 @@ pub struct SelectByAccountWithStartAndEnd {
     pub end: chrono::NaiveDateTime,
 }
 
-impl Query<PgPool> for SelectByAccountWithStartAndEnd {
+impl Query for SelectByAccountWithStartAndEnd {
     type Output = Vec<Transaction>;
 
-    async fn execute(&self, conn: &PgPool) -> crate::db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> crate::db::Result<Self::Output> {
         Ok(sqlx::query_as!(
             Transaction,
             r#"SELECT

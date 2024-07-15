@@ -1,6 +1,5 @@
 use crate::db::{self, Query, TransactionType};
 use sqlx::types::{chrono, BigDecimal, Uuid};
-use sqlx::PgPool;
 
 pub struct Insert<'a> {
     pub account_id: Uuid,
@@ -10,10 +9,13 @@ pub struct Insert<'a> {
     pub description: &'a str,
 }
 
-impl<'a> Query<PgPool> for Insert<'a> {
+impl<'a> Query for Insert<'a> {
     type Output = Uuid;
 
-    async fn execute(&self, conn: &PgPool) -> db::Result<Self::Output> {
+    async fn execute<'b>(
+        &self,
+        conn: impl sqlx::Executor<'b, Database = sqlx::Postgres>,
+    ) -> db::Result<Self::Output> {
         let record = sqlx::query!(
             r#"INSERT INTO transactions (
                     account_id,
