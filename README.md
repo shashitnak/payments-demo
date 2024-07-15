@@ -16,4 +16,4 @@ docker build . -t dodopayments
 ```commandline
 docker run -p 8080:8080 dodopayments
 ```
-5. The server is now running at `http://127.0.0.1:8080`. See the [documentation](https://documenter.getpostman.com/view/36976530/2sA3kPoPjd#9c8ad3a6-6603-4a69-88e5-b4e1a24f5c66) to learn about the APIs.
+5. The server is now running at `http://127.0.0.1:8080`. See the [documentation](https://documenter.getpostman.com/view/36976530/2sA3kPoiqe) to learn about the APIs.
