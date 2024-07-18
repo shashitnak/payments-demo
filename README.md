@@ -6,6 +6,7 @@
 
 ```commandline
 git clone git@github.com:shashitnak/payments-demo.git
+cd payments-demo
 ```
 2. Install docker, if you don't have it already, by going [here](https://docs.docker.com/engine/install/)
 3. Run the following command to build the docker image.
