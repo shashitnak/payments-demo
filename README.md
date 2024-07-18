@@ -2,7 +2,7 @@
 
 ## Steps to run the project
 
-1. Clone the project
+1. Clone the project and cd into it
 
 ```commandline
 git clone git@github.com:shashitnak/payments-demo.git
